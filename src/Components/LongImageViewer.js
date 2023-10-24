@@ -1,23 +1,26 @@
 import { Box, Slider } from "@mui/material";
 import Grid2 from "@mui/material/Unstable_Grid2/Grid2";
-import { useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import ImageViewer from "./ImageViewer";
 
 const CELL_NUMBER = 10;
 
 export default (props) => {
   const { imagePath } = props;
-  const image = new Image();
 
   const [centerPosition, setCenterPosition] = useState(50);
 
-  const canvasRef = useRef();
+  const handleChange = (e, v) => {
+    setCenterPosition(v);
+  };
 
   return (
     <>
       <Grid2 container>
         <Grid2 xs={12} sx={{ mb: 2 }}>
-          <ImageViewer imagePath={imagePath} />
+          <Box sx={{ px: 8, height: 600 }}>
+            <ImageViewer imagePath={imagePath} centerX={centerPosition} />
+          </Box>
         </Grid2>
         <Grid2 xs={12}>
           <img
@@ -28,7 +31,7 @@ export default (props) => {
           />
         </Grid2>
         <Grid2 xs={12}>
-          <Slider value={centerPosition} />
+          <Slider value={centerPosition} onChange={handleChange} />
         </Grid2>
       </Grid2>
     </>

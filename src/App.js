@@ -11,6 +11,7 @@ function App() {
           justifyContent: "center",
           alignItems: "center",
           height: "100%",
+          px: 8,
         }}
       >
         <LongImageViewer imagePath="/long1.png" />
