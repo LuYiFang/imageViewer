@@ -18,7 +18,7 @@ export default (props) => {
     <>
       <Grid2 container>
         <Grid2 xs={12} sx={{ mb: 2 }}>
-          <Box sx={{ px: 8, height: 600 }}>
+          <Box sx={{ px: "40px", position: "relative" }}>
             <ImageViewer imagePath={imagePath} centerX={centerPosition} />
           </Box>
         </Grid2>

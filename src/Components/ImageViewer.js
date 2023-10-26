@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Box, Slider } from "@mui/material";
+import { Box, IconButton, Slider } from "@mui/material";
 import Grid2 from "@mui/material/Unstable_Grid2/Grid2";
+import RestartAltIcon from "@mui/icons-material/RestartAlt";
 import _ from "lodash";
 
 const SCROLL_SENSITIVITY = 0.0005;
@@ -100,17 +101,6 @@ export default (props) => {
     draw();
   }, [zoom, centerX, offset]);
 
-  const handleWheel = (e) => {
-    const { deltaY } = e;
-    setZoom((zoom) => {
-      return _.clamp(
-        zoom + deltaY * SCROLL_SENSITIVITY * -1,
-        MIN_ZOOM,
-        MAX_ZOOM,
-      );
-    });
-  };
-
   const draw = () => {
     if (!canvasRef.current) return;
 
@@ -147,6 +137,22 @@ export default (props) => {
     );
   };
 
+  const reset = () => {
+    setZoom(1);
+    setOffset({ x: 0, y: 0 });
+  };
+
+  const handleWheel = (e) => {
+    const { deltaY } = e;
+    setZoom((zoom) => {
+      return _.clamp(
+        zoom + deltaY * SCROLL_SENSITIVITY * -1,
+        MIN_ZOOM,
+        MAX_ZOOM,
+      );
+    });
+  };
+
   const handleMouseDown = (e) => {
     setIsDragging(true);
 
@@ -173,24 +179,28 @@ export default (props) => {
 
   return (
     <>
-      <div
-        ref={containerRef}
-        style={{
-          height: "100%",
-          borderWidth: 1,
-          borderStyle: "solid",
-          borderColor: "blue",
-        }}
-      >
-        <canvas
-          style={{ borderWidth: 1, borderStyle: "solid", borderColor: "red" }}
-          ref={canvasRef}
-          onWheel={handleWheel}
-          onMouseDown={handleMouseDown}
-          onMouseUp={handleMouseUp}
-          onMouseMove={hangleMouseMove}
-        />
-      </div>
+      <Box>
+        <div
+          ref={containerRef}
+          style={{
+            height: "100%",
+          }}
+        >
+          <canvas
+            style={{}}
+            ref={canvasRef}
+            onWheel={handleWheel}
+            onMouseDown={handleMouseDown}
+            onMouseUp={handleMouseUp}
+            onMouseMove={hangleMouseMove}
+          />
+        </div>
+      </Box>
+      <Box sx={{ width: 40, position: "absolute", top: 0, right: 0 }}>
+        <IconButton onClick={reset}>
+          <RestartAltIcon />
+        </IconButton>
+      </Box>
     </>
   );
 };
