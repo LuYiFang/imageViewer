@@ -10,11 +10,14 @@ const MIN_ZOOM = 0.3;
 export default (props) => {
   const { imagePath, centerX } = props;
 
+  const [offset, setOffset] = useState({ x: 0, y: 0 });
+  const [isDragging, setIsDragging] = useState(false);
   const [zoom, setZoom] = useState(1);
   const [heightScale, setHeightScale] = useState(1);
   const containerRef = useRef();
   const canvasRef = useRef();
   const observer = useRef();
+  const touch = useRef({ x: 0, y: 0 });
 
   const image = useMemo(() => new Image(), [imagePath]);
 
@@ -95,7 +98,7 @@ export default (props) => {
 
   useEffect(() => {
     draw();
-  }, [zoom, centerX]);
+  }, [zoom, centerX, offset]);
 
   const handleWheel = (e) => {
     const { deltaY } = e;
@@ -118,6 +121,7 @@ export default (props) => {
     canvasRef.current.width = width;
     canvasRef.current.height = height;
 
+    context.translate(-offset.x, -offset.y);
     context.scale(zoom, zoom);
     context.clearRect(0, 0, width, height);
 
@@ -143,6 +147,30 @@ export default (props) => {
     );
   };
 
+  const handleMouseDown = (e) => {
+    setIsDragging(true);
+
+    const { clientX, clientY } = e;
+
+    touch.current = { x: clientX, y: clientY };
+  };
+
+  const handleMouseUp = () => setIsDragging(false);
+
+  const hangleMouseMove = (e) => {
+    if (!isDragging) return;
+
+    const { x, y } = touch.current;
+    const { clientX, clientY } = e;
+
+    setOffset({
+      x: offset.x + (x - clientX),
+      y: offset.y + (y - clientY),
+    });
+
+    touch.current = { x: clientX, y: clientY };
+  };
+
   return (
     <>
       <div
@@ -158,6 +186,9 @@ export default (props) => {
           style={{ borderWidth: 1, borderStyle: "solid", borderColor: "red" }}
           ref={canvasRef}
           onWheel={handleWheel}
+          onMouseDown={handleMouseDown}
+          onMouseUp={handleMouseUp}
+          onMouseMove={hangleMouseMove}
         />
       </div>
     </>
