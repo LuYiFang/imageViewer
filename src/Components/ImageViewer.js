@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Box, IconButton, Slider } from "@mui/material";
+import { Box, Button, IconButton, Slider, Tooltip } from "@mui/material";
 import Grid2 from "@mui/material/Unstable_Grid2/Grid2";
 import RestartAltIcon from "@mui/icons-material/RestartAlt";
 import _ from "lodash";
@@ -9,7 +9,7 @@ const MAX_ZOOM = 10;
 const MIN_ZOOM = 0.3;
 
 export default (props) => {
-  const { imagePath, centerX } = props;
+  const { imageSrc, centerX } = props;
 
   const [offset, setOffset] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
@@ -20,14 +20,15 @@ export default (props) => {
   const observer = useRef();
   const touch = useRef({ x: 0, y: 0 });
 
-  const image = useMemo(() => new Image(), [imagePath]);
+  const image = useMemo(() => new Image(), [imageSrc]);
 
   useEffect(() => {
     if (!containerRef?.current) return;
-    if (!canvasRef?.current) return;
 
     observer.current = new ResizeObserver((entries) => {
       entries.forEach(({ target }) => {
+        if (!canvasRef?.current) return;
+
         const { width, height } = image;
 
         const canvasScale = target.clientWidth / canvasRef.current.width;
@@ -64,14 +65,18 @@ export default (props) => {
     });
     observer.current.observe(containerRef.current);
 
-    return () => observer?.current?.unobserve(containerRef?.current);
+    return () => {
+      if (!observer?.current) return;
+      if (!containerRef?.current) return;
+      observer.current.unobserve(containerRef.current);
+    };
   }, []);
 
   useEffect(() => {
     if (!containerRef?.current) return;
     if (!canvasRef?.current) return;
 
-    image.src = imagePath;
+    image.src = imageSrc;
 
     image.onload = () => {
       const { width, height } = image;
@@ -179,7 +184,7 @@ export default (props) => {
 
   return (
     <>
-      <Box>
+      <Box sx={{ height: "100%", width: "100%" }}>
         <div
           ref={containerRef}
           style={{
@@ -187,7 +192,7 @@ export default (props) => {
           }}
         >
           <canvas
-            style={{}}
+            style={{ height: "100%" }}
             ref={canvasRef}
             onWheel={handleWheel}
             onMouseDown={handleMouseDown}
@@ -197,9 +202,11 @@ export default (props) => {
         </div>
       </Box>
       <Box sx={{ width: 40, position: "absolute", top: 0, right: 0 }}>
-        <IconButton onClick={reset}>
-          <RestartAltIcon />
-        </IconButton>
+        <Tooltip title="Reset">
+          <IconButton onClick={reset}>
+            <RestartAltIcon />
+          </IconButton>
+        </Tooltip>
       </Box>
     </>
   );
