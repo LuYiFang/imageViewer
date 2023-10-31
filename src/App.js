@@ -1,6 +1,6 @@
 import { Box } from "@mui/material";
 import "./App.css";
-import LongImageViewer from "./Components/LongImageViewer";
+import LongImageViewer from "./Components/LongImageViewer/LongImageViewer";
 
 function App() {
   return (

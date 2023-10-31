@@ -1,0 +1,36 @@
+.clear-box {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: flex;
+  justify-content: end;
+}
+
+div.image-detail {
+  margin-bottom: 16px;
+  width: 100vw;
+}
+
+.image-area {
+  padding-left: 40px;
+  padding-right: 40px;
+  position: relative;
+  height: 60vh;
+}
+
+img.full-img {
+  height: 100%;
+  max-height: 66px;
+  max-width: 100%;
+}
+
+div.slider-area {
+  display: inline-flex;
+  justify-content: center;
+}
+
+div.slider-box {
+  display: flex;
+  flex-direction: column;
+  min-width: 64px;
+}

@@ -1,9 +1,10 @@
 import { Box, IconButton, Slider, Tooltip } from "@mui/material";
 import Grid2 from "@mui/material/Unstable_Grid2/Grid2";
 import { useRef, useState } from "react";
-import ImageViewer from "./ImageViewer";
-import UploadBox from "./UploadBox/UploadBox";
-import { Delete, DeleteForever } from "@mui/icons-material";
+import ImageView from "../ImageView/ImageView";
+import UploadBox from "../UploadBox/UploadBox";
+import { Delete } from "@mui/icons-material";
+import "./style.css";
 
 export default (props) => {
   const [imageSrc, setImageSrc] = useState();
@@ -18,6 +19,7 @@ export default (props) => {
   const clearImage = () => {
     uploadBoxRef?.current?.clear();
     setImageSrc(null);
+    setCenterPosition(50);
   };
 
   const onFileUpdate = (image) => {
@@ -26,15 +28,7 @@ export default (props) => {
 
   return (
     <>
-      <Box
-        sx={{
-          position: "absolute",
-          top: 8,
-          right: 8,
-          display: "flex",
-          justifyContent: "end",
-        }}
-      >
+      <Box className="clear-box">
         <Tooltip title="Clear">
           <IconButton onClick={clearImage}>
             <Delete />
@@ -42,26 +36,20 @@ export default (props) => {
         </Tooltip>
       </Box>
       <Grid2 container>
-        <Grid2 xs={12} sx={{ mb: 2, width: "100vw" }}>
-          <Box sx={{ px: "40px", position: "relative", height: "60vh" }}>
+        <Grid2 xs={12} className="image-detail">
+          <Box className="image-area">
             {imageSrc ? (
-              <ImageViewer imageSrc={imageSrc} centerX={centerPosition} />
+              <ImageView imageSrc={imageSrc} centerX={centerPosition} />
             ) : (
               <UploadBox ref={uploadBoxRef} onFileUpdate={onFileUpdate} />
             )}
           </Box>
         </Grid2>
-        <Grid2 xs={12}>
-          <img
-            style={{
-              height: "100%",
-              maxHeight: 64,
-            }}
-            src={imageSrc}
-          />
-        </Grid2>
-        <Grid2 xs={12}>
-          <Slider value={centerPosition} onChange={handleChange} />
+        <Grid2 xs={12} className="slider-area">
+          <Box className="slider-box">
+            <img className="full-img" src={imageSrc} />
+            <Slider value={centerPosition} onChange={handleChange} />
+          </Box>
         </Grid2>
       </Grid2>
     </>

@@ -1,0 +1,15 @@
+.image-box {
+  height: 100%;
+  width: 100%;
+}
+
+.full-height {
+  height: 100%;
+}
+
+.tool-box {
+  width: 40px;
+  position: absolute;
+  top: 0;
+  right: 0;
+}

@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Box, Button, IconButton, Slider, Tooltip } from "@mui/material";
-import Grid2 from "@mui/material/Unstable_Grid2/Grid2";
+import { Box, IconButton, Tooltip } from "@mui/material";
 import RestartAltIcon from "@mui/icons-material/RestartAlt";
 import _ from "lodash";
+import "./style.css";
 
 const SCROLL_SENSITIVITY = 0.0005;
 const MAX_ZOOM = 10;
@@ -48,19 +48,18 @@ export default (props) => {
         const x = (width * centerX) / 100 - canvasRef.current.width / 2;
         const y = (canvasRef.current.height / scale - height) / 2;
 
-        canvasRef.current
-          .getContext("2d")
-          .drawImage(
-            image,
-            x,
-            y,
-            width,
-            height,
-            0,
-            0,
-            scaledWidth,
-            scaledHeight,
-          );
+        canvasRef.current.getContext("2d").drawImage(
+          image,
+          0,
+          0,
+          width,
+          height,
+          x,
+          y,
+
+          scaledWidth,
+          scaledHeight,
+        );
       });
     });
     observer.current.observe(containerRef.current);
@@ -81,30 +80,37 @@ export default (props) => {
     image.onload = () => {
       const { width, height } = image;
 
-      let scale = 1;
       canvasRef.current.width = containerRef.current.clientWidth;
       canvasRef.current.height = containerRef.current.clientHeight;
 
-      if (containerRef.current.clientHeight > height) {
-        scale = containerRef.current.clientHeight / height;
-        setHeightScale(scale);
-      }
+      const scale = containerRef.current.clientHeight / height;
+      setHeightScale(scale);
 
       const scaledWidth = width * scale;
       const scaledHeight = height * scale;
 
-      const x = (width * centerX) / 100 - canvasRef.current.width / 2;
-      const y = (canvasRef.current.height / scale - height) / 2;
+      const { x, y } = countCenter(scaledWidth);
 
       canvasRef.current
         .getContext("2d")
-        .drawImage(image, x, y, width, height, 0, 0, scaledWidth, scaledHeight);
+        .drawImage(image, 0, 0, width, height, x, y, scaledWidth, scaledHeight);
     };
   }, [image]);
 
   useEffect(() => {
     draw();
   }, [zoom, centerX, offset]);
+
+  const countCenter = (scaledWidth) => {
+    const canvasWidth = canvasRef.current.width;
+    let x = -(scaledWidth * (centerX / 100) - canvasWidth / 2);
+
+    if (canvasWidth > scaledWidth) {
+      x = canvasWidth / 2 - scaledWidth * (centerX / 100);
+    }
+
+    return { x, y: 0 };
+  };
 
   const draw = () => {
     if (!canvasRef.current) return;
@@ -123,20 +129,22 @@ export default (props) => {
     const scaledWidth = imageWidth * heightScale * zoom;
     const scaledHeight = imageHeight * heightScale * zoom;
 
-    let x = (imageWidth * centerX) / 100 - context.canvas.width / 2 / zoom;
-    let y = (context.canvas.height / heightScale - imageHeight) / 2 / zoom;
+    let { x, y } = countCenter(imageWidth * heightScale);
+
+    x = x / zoom;
+    y = y / zoom;
 
     x += (context.canvas.width / zoom - width) / 2;
     y += (context.canvas.height / zoom - height) / 2;
 
     context.drawImage(
       image,
-      x,
-      y,
+      0,
+      0,
       imageWidth,
       imageHeight,
-      0,
-      0,
+      x,
+      y,
       scaledWidth,
       scaledHeight,
     );
@@ -184,15 +192,11 @@ export default (props) => {
 
   return (
     <>
-      <Box sx={{ height: "100%", width: "100%" }}>
-        <div
-          ref={containerRef}
-          style={{
-            height: "100%",
-          }}
-        >
+      <Box className="image-box">
+        <div ref={containerRef} className="full-height">
           <canvas
-            style={{ height: "100%" }}
+            style={{ border: "1px solid black" }}
+            className="full-height"
             ref={canvasRef}
             onWheel={handleWheel}
             onMouseDown={handleMouseDown}
@@ -201,7 +205,7 @@ export default (props) => {
           />
         </div>
       </Box>
-      <Box sx={{ width: 40, position: "absolute", top: 0, right: 0 }}>
+      <Box className="tool-box">
         <Tooltip title="Reset">
           <IconButton onClick={reset}>
             <RestartAltIcon />
